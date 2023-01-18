@@ -24,6 +24,7 @@ dependencies:
   scroll_to_index: ^3.0.1
   url_launcher: ^6.1.6
   visibility_detector: ^0.3.3
+  avatar_glow: ^2.0.2
 
 dev_dependencies:
   dart_code_metrics: ^4.21.3
@@ -40,6 +41,8 @@ flutter:
     - packages/flutter_chat_ui/assets/icon-error.png
     - packages/flutter_chat_ui/assets/icon-seen.png
     - packages/flutter_chat_ui/assets/icon-send.png
+    - packages/flutter_chat_ui/assets/icon-image_mode_on.png
+    - packages/flutter_chat_ui/assets/icon-image_mode_off.png
     - packages/flutter_chat_ui/assets/2.0x/icon-arrow.png
     - packages/flutter_chat_ui/assets/2.0x/icon-attachment.png
     - packages/flutter_chat_ui/assets/2.0x/icon-delivered.png

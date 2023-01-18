@@ -49,9 +49,7 @@ class UserAvatar extends StatelessWidget {
                   .theme
                   .userAvatarImageBackgroundColor
               : color,
-          backgroundImage: hasImage
-              ? NetworkImage(author.imageUrl!, headers: imageHeaders)
-              : null,
+          backgroundImage: hasImage ? AssetImage(author.imageUrl!) : null,
           radius: 16,
           child: !hasImage
               ? Text(

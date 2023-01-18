@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
@@ -60,6 +61,7 @@ class Chat extends StatefulWidget {
     this.imageMessageBuilder,
     this.inputOptions = const InputOptions(),
     this.isAttachmentUploading,
+    this.isInputEnabled = true,
     this.isLastPage,
     this.keyboardDismissBehavior = ScrollViewKeyboardDismissBehavior.manual,
     this.l10n = const ChatL10nEn(),
@@ -95,6 +97,8 @@ class Chat extends StatefulWidget {
     this.userAgent,
     this.useTopSafeAreaInset,
     this.videoMessageBuilder,
+    this.onVoicePressed,
+    this.isRecording = false,
   });
 
   /// See [Message.audioMessageBuilder].
@@ -199,6 +203,10 @@ class Chat extends StatefulWidget {
   /// See [Input.isAttachmentUploading].
   final bool? isAttachmentUploading;
 
+  final bool isInputEnabled;
+
+  final bool isRecording;
+
   /// See [ChatList.isLastPage].
   final bool? isLastPage;
 
@@ -222,6 +230,8 @@ class Chat extends StatefulWidget {
 
   /// See [Input.onAttachmentPressed].
   final VoidCallback? onAttachmentPressed;
+
+  final VoidCallback? onVoicePressed;
 
   /// See [Message.onAvatarTap].
   final void Function(types.User)? onAvatarTap;
@@ -462,7 +472,10 @@ class ChatState extends State<Chat> {
                             isAttachmentUploading: widget.isAttachmentUploading,
                             onAttachmentPressed: widget.onAttachmentPressed,
                             onSendPressed: widget.onSendPressed,
+                            onVoicePressed: widget.onVoicePressed,
                             options: widget.inputOptions,
+                            isInputEnabled: widget.isInputEnabled,
+                            isRecording: widget.isRecording,
                           ),
                     ],
                   ),

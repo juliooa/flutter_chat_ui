@@ -52,11 +52,13 @@ class _ChatPageState extends State<ChatPage> {
           messages: _messages,
           onAttachmentPressed: _handleAttachmentPressed,
           onMessageTap: _handleMessageTap,
+          onVoicePressed: _handleOnVoicePressed,
           onPreviewDataFetched: _handlePreviewDataFetched,
           onSendPressed: _handleSendPressed,
           showUserAvatars: true,
           showUserNames: true,
           user: _user,
+          isRecording: false,
         ),
       );
 
@@ -235,4 +237,6 @@ class _ChatPageState extends State<ChatPage> {
       _messages = messages;
     });
   }
+
+  void _handleOnVoicePressed() {}
 }

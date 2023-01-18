@@ -8,8 +8,10 @@ import '../../util.dart';
 import '../state/inherited_chat_theme.dart';
 import '../state/inherited_l10n.dart';
 import 'attachment_button.dart';
+import 'image_mode_button.dart';
 import 'input_text_field_controller.dart';
 import 'send_button.dart';
+import 'voice_button.dart';
 
 /// A class that represents bottom bar widget with a text field, attachment and
 /// send buttons inside. By default hides send button when text field is empty.
@@ -19,8 +21,12 @@ class Input extends StatefulWidget {
     super.key,
     this.isAttachmentUploading,
     this.onAttachmentPressed,
+    this.onImageModeChange,
+    this.onVoicePressed,
     required this.onSendPressed,
     this.options = const InputOptions(),
+    this.isInputEnabled,
+    this.isRecording = false,
   });
 
   /// Whether attachment is uploading. Will replace attachment button with a
@@ -29,8 +35,16 @@ class Input extends StatefulWidget {
   /// something is uploading so you need to set this manually.
   final bool? isAttachmentUploading;
 
+  final bool isRecording;
+
+  final bool? isInputEnabled;
+
+  final Function(bool)? onImageModeChange;
+
   /// See [AttachmentButton.onPressed].
   final VoidCallback? onAttachmentPressed;
+
+  final VoidCallback? onVoicePressed;
 
   /// Will be called on [SendButton] tap. Has [types.PartialText] which can
   /// be transformed to [types.TextMessage] and added to the messages list.
@@ -66,6 +80,8 @@ class _InputState extends State<Input> {
 
   bool _sendButtonVisible = false;
   late TextEditingController _textController;
+
+  bool _isImageModeOn = false;
 
   @override
   void initState() {
@@ -136,6 +152,8 @@ class _InputState extends State<Input> {
         .theme
         .inputPadding
         .copyWith(left: 16, right: 16);
+    final imageButtonPadding =
+        InheritedChatTheme.of(context).theme.inputPadding.copyWith(left: 16);
     final safeAreaInsets = isMobile
         ? EdgeInsets.fromLTRB(
             query.padding.left,
@@ -150,7 +168,7 @@ class _InputState extends State<Input> {
         .copyWith(left: 0, right: 0)
         .add(
           EdgeInsets.fromLTRB(
-            widget.onAttachmentPressed != null ? 0 : 24,
+            24,
             0,
             _sendButtonVisible ? 0 : 24,
             0,
@@ -171,16 +189,21 @@ class _InputState extends State<Input> {
             child: Row(
               textDirection: TextDirection.ltr,
               children: [
-                if (widget.onAttachmentPressed != null)
-                  AttachmentButton(
-                    isLoading: widget.isAttachmentUploading ?? false,
-                    onPressed: widget.onAttachmentPressed,
-                    padding: buttonPadding,
-                  ),
+                ImageModeButton(
+                  isActivated: _isImageModeOn,
+                  onImageModeChange: ((isImageModeOn) {
+                    widget.onImageModeChange?.call(isImageModeOn);
+                    setState(() {
+                      _isImageModeOn = isImageModeOn;
+                    });
+                  }),
+                  padding: EdgeInsets.only(left: 16),
+                ),
                 Expanded(
                   child: Padding(
                     padding: textPadding,
                     child: TextField(
+                      enabled: widget.isInputEnabled,
                       controller: _textController,
                       cursorColor: InheritedChatTheme.of(context)
                           .theme
@@ -198,8 +221,11 @@ class _InputState extends State<Input> {
                                       .inputTextColor
                                       .withOpacity(0.5),
                                 ),
-                            hintText:
-                                InheritedL10n.of(context).l10n.inputPlaceholder,
+                            hintText: _isImageModeOn
+                                ? "Message to generate image"
+                                : InheritedL10n.of(context)
+                                    .l10n
+                                    .inputPlaceholder,
                           ),
                       focusNode: _inputFocusNode,
                       keyboardType: TextInputType.multiline,
@@ -219,12 +245,26 @@ class _InputState extends State<Input> {
                     ),
                   ),
                 ),
+                if (widget.onVoicePressed != null)
+                  ConstrainedBox(
+                    constraints: BoxConstraints(
+                      minHeight: buttonPadding.bottom + buttonPadding.top + 24,
+                    ),
+                    child: Visibility(
+                      visible: !_sendButtonVisible || widget.isRecording,
+                      child: VoiceButton(
+                        onPressed: widget.onVoicePressed,
+                        isRecording: widget.isRecording,
+                        padding: buttonPadding,
+                      ),
+                    ),
+                  ),
                 ConstrainedBox(
                   constraints: BoxConstraints(
                     minHeight: buttonPadding.bottom + buttonPadding.top + 24,
                   ),
                   child: Visibility(
-                    visible: _sendButtonVisible,
+                    visible: _sendButtonVisible && !widget.isRecording,
                     child: SendButton(
                       onPressed: _handleSendPressed,
                       padding: buttonPadding,
