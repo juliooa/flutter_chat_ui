@@ -35,7 +35,7 @@ class VoiceButton extends StatelessWidget {
             minWidth: 24,
           ),
           icon: buildMicIcon(),
-          onPressed: isRecording ? null : onPressed,
+          onPressed: onPressed,
           padding: padding,
           splashRadius: 24,
           tooltip:

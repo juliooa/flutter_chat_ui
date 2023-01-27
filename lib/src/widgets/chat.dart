@@ -1,6 +1,6 @@
 import 'dart:math';
-import 'dart:ui';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:intl/intl.dart';
@@ -99,6 +99,7 @@ class Chat extends StatefulWidget {
     this.videoMessageBuilder,
     this.onVoicePressed,
     this.isRecording = false,
+    this.onImageModeChange,
   });
 
   /// See [Message.audioMessageBuilder].
@@ -206,6 +207,8 @@ class Chat extends StatefulWidget {
   final bool isInputEnabled;
 
   final bool isRecording;
+
+  final Function(bool)? onImageModeChange;
 
   /// See [ChatList.isLastPage].
   final bool? isLastPage;
@@ -476,6 +479,7 @@ class ChatState extends State<Chat> {
                             options: widget.inputOptions,
                             isInputEnabled: widget.isInputEnabled,
                             isRecording: widget.isRecording,
+                            onImageModeChange: widget.onImageModeChange,
                           ),
                     ],
                   ),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:visibility_detector/visibility_detector.dart';
 
+import '../../../flutter_chat_ui.dart';
 import '../../models/bubble_rtl_alignment.dart';
 import '../../models/emoji_enlargement_behavior.dart';
 import '../../util.dart';
@@ -317,12 +318,21 @@ class Message extends StatelessWidget {
           : enlargeEmojis && hideBackgroundOnEmojiMessages
               ? _messageBuilder()
               : Container(
+                  margin: EdgeInsets.only(top: 4, bottom: 4),
                   decoration: BoxDecoration(
                     borderRadius: borderRadius,
                     color: !currentUserIsAuthor ||
                             message.type == types.MessageType.image
                         ? InheritedChatTheme.of(context).theme.secondaryColor
                         : InheritedChatTheme.of(context).theme.primaryColor,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.grey.withOpacity(0.2),
+                        spreadRadius: 2,
+                        blurRadius: 3,
+                        offset: Offset(0, 0), // changes position of shadow
+                      ),
+                    ],
                   ),
                   child: ClipRRect(
                     borderRadius: borderRadius,
@@ -339,9 +349,27 @@ class Message extends StatelessWidget {
             : const SizedBox();
       case types.MessageType.custom:
         final customMessage = message as types.CustomMessage;
-        return customMessageBuilder != null
-            ? customMessageBuilder!(customMessage, messageWidth: messageWidth)
-            : const SizedBox();
+        if (customMessageBuilder != null) {
+          return customMessageBuilder!(
+            customMessage,
+            messageWidth: messageWidth,
+          );
+        }
+        if (customMessage.metadata != null &&
+            customMessage.metadata!.containsKey('id') &&
+            customMessage.metadata?['id'] == 'cta_text_message') {
+          return TextCTAMessage(
+            message: customMessage,
+            nameBuilder: nameBuilder,
+            onPreviewDataFetched: onPreviewDataFetched,
+            options: textMessageOptions,
+            showName: showName,
+            usePreviewData: usePreviewData,
+            userAgent: userAgent,
+            onPressed: customMessage.metadata?['onPressed'],
+          );
+        }
+        return const SizedBox();
       case types.MessageType.file:
         final fileMessage = message as types.FileMessage;
         return fileMessageBuilder != null
